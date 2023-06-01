@@ -1,6 +1,6 @@
-# Audio Converter Script
+# Any to compressed M4A Audio Converter Script
 
-This script is a bash script that automates the process of converting audio files to the WAV format and compressing them using fhgaacenc. It ensures that the input files are in the WAV format before compressing them.
+This script is a bash script that automates the process of converting audio files to the WAV format and compressing them using fhgaacenc. It ensures that the input files are in the WAV format before compressing them with multiple threads with high speed.
 
 ## Requirements
 
