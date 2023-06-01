@@ -40,7 +40,8 @@ compress_with_fhgaacenc() {
 }
 
 # Experimental toggle for parallel conversion (set to 1 to enable)
-experimental_parallel_conversion=0
+# WARNING!! May melt processors!!
+experimental_parallel_conversion=1
 
 # Clear the log file if it exists
 > "$log_file"
