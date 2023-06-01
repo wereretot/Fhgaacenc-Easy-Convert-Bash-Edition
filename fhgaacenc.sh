@@ -21,6 +21,15 @@ log_file="conversion_log.txt"
 
 mkdir -p "$output_folder" "$temp_folder"
 
+# Function to convert a file to WAV format
+convert_to_wav() {
+    input_file="$1"
+    wav_file="$2"
+
+    ffmpeg -i "$input_file" -acodec pcm_s16le -ar 44100 "$wav_file" >/dev/null 2>&1
+    echo "Converted: $input_file to $wav_file" | tee -a "$log_file"
+}
+
 # Function to compress a WAV file using fhgaacenc
 compress_with_fhgaacenc() {
     wav_file="$1"
@@ -51,17 +60,15 @@ for input_file in *; do
         # Skip conversion if the output file already exists
         if [ -f "$wav_file" ]; then
             echo "Skipping conversion for $input_file" | tee -a "$log_file"
-        else
-            ffmpeg -i "$input_file" -acodec pcm_s16le -ar 44100 "$wav_file" >/dev/null 2>&1
-            echo "Converted: $input_file to $wav_file" | tee -a "$log_file"
+            continue
         fi
+
+        convert_to_wav "$input_file" "$wav_file"
     else
-        # Move the input WAV file to the temporary folder if it doesn't exist there
+        # Use the input file as-is by moving it to the temp folder
         wav_file="${temp_folder}/${input_file}"
-        if [ ! -f "$wav_file" ]; then
-            mv "$input_file" "$wav_file"
-            echo "Moved: $input_file to $wav_file" | tee -a "$log_file"
-        fi
+        mv "$input_file" "$wav_file"
+        echo "Moved: $input_file to $wav_file" | tee -a "$log_file"
     fi
 
     # Compress the WAV file using fhgaacenc
@@ -84,3 +91,6 @@ done
 if [ "$experimental_parallel_conversion" -eq 1 ]; then
     wait
 fi
+
+# Clear the temp folder
+rm -rf "$temp_folder"
