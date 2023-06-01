@@ -31,7 +31,6 @@ compress_with_fhgaacenc() {
 }
 
 # Experimental toggle for parallel conversion (set to 1 to enable)
-# WARNING!! May melt processors!!
 experimental_parallel_conversion=1
 
 # Clear the log file if it exists
@@ -52,16 +51,17 @@ for input_file in *; do
         # Skip conversion if the output file already exists
         if [ -f "$wav_file" ]; then
             echo "Skipping conversion for $input_file" | tee -a "$log_file"
-            continue
+        else
+            ffmpeg -i "$input_file" -acodec pcm_s16le -ar 44100 "$wav_file" >/dev/null 2>&1
+            echo "Converted: $input_file to $wav_file" | tee -a "$log_file"
         fi
-
-        ffmpeg -i "$input_file" -acodec pcm_s16le -ar 44100 "$wav_file" >/dev/null 2>&1
-        echo "Converted: $input_file to $wav_file" | tee -a "$log_file"
     else
-        # Move the input WAV file to the temporary folder
+        # Move the input WAV file to the temporary folder if it doesn't exist there
         wav_file="${temp_folder}/${input_file}"
-        mv "$input_file" "$wav_file"
-        echo "Moved: $input_file to $wav_file" | tee -a "$log_file"
+        if [ ! -f "$wav_file" ]; then
+            mv "$input_file" "$wav_file"
+            echo "Moved: $input_file to $wav_file" | tee -a "$log_file"
+        fi
     fi
 
     # Compress the WAV file using fhgaacenc
