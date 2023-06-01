@@ -23,7 +23,7 @@ Use https://www.andrews-corner.org/fhgaacenc.html for instructions.
 
 The script will create the necessary output and temporary folders if they don't exist. It will then iterate over the audio files in the current folder, converting any non-WAV files to WAV format using FFmpeg. Finally, it will compress the WAV files using fhgaacenc and save the compressed files in the output folder.
 
-Note: The script assumes that the input files have unique names. If an output file with the same name already exists, it will be overwritten.
-License
+Note: The script assumes that the input files have unique names. If an output file with the same name already exists, it will be overwritten. Also this program tries to use all of your threads to maximize conversion speed, to disable change the 'experimental_parallel_conversion' to 0 before runtime.
+##License
 
 This script is licensed under the MIT License.
