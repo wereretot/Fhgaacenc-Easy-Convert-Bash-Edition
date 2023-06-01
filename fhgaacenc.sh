@@ -40,7 +40,7 @@ compress_with_fhgaacenc() {
 }
 
 # Experimental toggle for parallel conversion (set to 1 to enable)
-experimental_parallel_conversion=1
+experimental_parallel_conversion=0
 
 # Clear the log file if it exists
 > "$log_file"
@@ -52,23 +52,21 @@ for input_file in *; do
         continue
     fi
 
-    # Check if the input file is not in WAV format
+    # Check if the input file is not in WAV format and M4A file does not exist
     if ! file -i "$input_file" | grep -q "audio/wav"; then
-        # Convert non-WAV files to WAV format
-        wav_file="${temp_folder}/${input_file%.*}.wav"
-
-        # Skip conversion if the output file already exists
-        if [ -f "$wav_file" ]; then
+        # Use the input file as-is if M4A file already exists
+        output_file="${output_folder}/${input_file%.*}.m4a"
+        if [ -f "$output_file" ]; then
             echo "Skipping conversion for $input_file" | tee -a "$log_file"
             continue
         fi
 
+        # Convert non-WAV files to WAV format
+        wav_file="${temp_folder}/${input_file%.*}.wav"
         convert_to_wav "$input_file" "$wav_file"
     else
-        # Use the input file as-is by moving it to the temp folder
-        wav_file="${temp_folder}/${input_file}"
-        mv "$input_file" "$wav_file"
-        echo "Moved: $input_file to $wav_file" | tee -a "$log_file"
+        # Use the input file as-is
+        wav_file="$input_file"
     fi
 
     # Compress the WAV file using fhgaacenc
@@ -92,5 +90,5 @@ if [ "$experimental_parallel_conversion" -eq 1 ]; then
     wait
 fi
 
-# Clear the temp folder
+# Clear the temp folder to save space
 rm -rf "$temp_folder"
